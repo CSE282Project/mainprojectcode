@@ -6,9 +6,9 @@ class Matching:
     '''
     def __init__(self, edges = None):
         if edges == None:
-            edges = set()
+            edges = []
         self.vertices = set()
-        self.edges = set()
+        self.edges = []
         self.add_edges(edges)
     
     def get_edges(self):
@@ -23,7 +23,7 @@ class Matching:
         assert v not in self.vertices
         
         self.vertices.update(edge)
-        self.edges.add(edge)
+        self.edges.append(edge)
     
     def add_edges(self, edges):
         for edge in edges:
@@ -62,6 +62,9 @@ class Matching:
     def __iter__(self):
         for edge in self.edges:
             yield edge
+            
+    def __repr__(self):
+        return str(self.edges)
 
 complements = {'A' : 'T', 'T' : 'A', 'G' : 'C', 'C' : 'G'}
 
@@ -121,15 +124,14 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         the interval.  Returns an empty matching if there are no edges within this
         interval
     '''
-    assert start > 0
-    assert end <= len(genome) - k
     
     if (start, end) in sub_matchings:
         return sub_matchings[(start, end)]
     
+    
     inbounds = lambda x : start <= x and x <= end
     motifs = filter(inbounds, motif_nodes)
-    reverses = filter(inbounds, revc_nodes)
+    reverses = filter(lambda x : inbounds(-x), revc_nodes)
     
     '''
     instead of initializing best_matching to None we initialize it to an empty matching
@@ -141,9 +143,12 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     
     for motif in motifs:
         assert motif > 0
-        for revc in revc_nodes:
+        for revc in reverses:
             assert revc < 0
-            print motif, revc
+            
+            dist = abs(motif - abs(revc))
+            if dist < k:
+                continue
             '''
             adding edge (motif, revc) to the matching, then finding the best 
             non-crossing matching that includes this edge
@@ -172,7 +177,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
             # get the weighted sum of the optimal sub-matchings that do not cross 
             # (motif, revc)
             total = (left_mean * left_n) + (right_mean * right_n) + (mid_mean * mid_n)
-            dist = abs(motif - abs(revc))
+            
             total += dist
             n = left_n + right_n + mid_n + 1
             score = float(total) / n
@@ -200,8 +205,8 @@ def maximal_matching(genome, motifs, k):
     
 if __name__ == '__main__':
     genome = 'TTGAACTGAGCGAAGAAAGATCGCAGACTGTCAA'
-    motifs = ['TTGA', 'GCGA']
+    motifs = ['TTGA', 'GCGA']  # revc = ['TCAA', 'TCGC']
     k = 4
     matching = maximal_matching(genome, motifs, k)
-    print matching.get_edges()
-    
+    print matching
+    print matching.get_weight()
