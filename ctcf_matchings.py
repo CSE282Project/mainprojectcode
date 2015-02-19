@@ -181,7 +181,9 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
             total += dist
             n = left_n + right_n + mid_n + 1
             score = float(total) / n
-           
+            
+            # if this matching is optimal on this interval, then combine all the optimal
+            # sub-matchings and add this edge
             if score < best_score:
                 best_matching = left + right + mid
                 best_matching.add_edge((motif, revc))
