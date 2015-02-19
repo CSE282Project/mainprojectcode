@@ -58,18 +58,22 @@ class Matching:
         m.add_matching(self)
         m.add_matching(other)
         return m
+        
+    def __iter__(self):
+        for edge in self.edges:
+            yield edge
 
 complements = {'A' : 'T', 'T' : 'A', 'G' : 'C', 'C' : 'G'}
 
-def reverse_complements(dna):
+def reverse_complement(dna):
     revc = []
-    for base in range(len(dna) - 1, -1, -1):
+    for i in range(len(dna) - 1, -1, -1):
+        base = dna[i]
         revc.append(complements[base])
     return ''.join(revc)
     
 def get_vertices(genome, motifs, k):
     reverse_complements = map(reverse_complement, motifs)
-    
     motif_nodes = []
     revc_nodes = []
     
@@ -82,7 +86,7 @@ def get_vertices(genome, motifs, k):
         kmer = genome[i:i + k]
         if kmer in motifs:
             motif_nodes.append(pos)
-        elif kmer in revc_nodes:
+        elif kmer in reverse_complements:
             revc_nodes.append(-pos)
     
     '''
@@ -117,8 +121,8 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         the interval.  Returns an empty matching if there are no edges within this
         interval
     '''
-    assert start <= 0
-    assert end < len(genome) - k
+    assert start > 0
+    assert end <= len(genome) - k
     
     if (start, end) in sub_matchings:
         return sub_matchings[(start, end)]
@@ -139,6 +143,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         assert motif > 0
         for revc in revc_nodes:
             assert revc < 0
+            print motif, revc
             '''
             adding edge (motif, revc) to the matching, then finding the best 
             non-crossing matching that includes this edge
@@ -183,7 +188,6 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
 def maximal_matching(genome, motifs, k):
     # generate the graph
     motif_nodes, revc_nodes = get_vertices(genome, motifs, k)
-    
     '''
     call the helper function, starting with an empty dictionary and setting the 
     endpoints to be the entire genome
@@ -195,7 +199,9 @@ def maximal_matching(genome, motifs, k):
     return matching_helper(motif_nodes, revc_nodes, k, 1, len(genome) - k, {})
     
 if __name__ == '__main__':
-    genome = TTGAACTGAGCGAAGAAAGATCGCAGACTGTCAA
-    motifs = [TTGA, GCGA]
+    genome = 'TTGAACTGAGCGAAGAAAGATCGCAGACTGTCAA'
+    motifs = ['TTGA', 'GCGA']
     k = 4
-    print maximal_matching(genome, motifs, k)
+    matching = maximal_matching(genome, motifs, k)
+    print matching.get_edges()
+    
