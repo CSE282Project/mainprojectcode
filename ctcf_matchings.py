@@ -138,7 +138,8 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     if there are no edges within the interval, then an empty matching will be returned
     which is what we want
     '''
-    best_matching = Matching()
+#    best_matching = Matching()
+    best_matching = []
     best_score = float("inf")
     
     for motif in motifs:
@@ -184,11 +185,23 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
             
             # if this matching is optimal on this interval, then combine all the optimal
             # sub-matchings and add this edge
-            if score < best_score:
-                best_matching = left + right + mid
-                best_matching.add_edge((motif, revc))
+            if score == best_score:
+            #if score > best_score - espsilon and score < best_score + epsilon
+#                best_matching = left + right + mid
+#                best_matching.add_edge((motif, revc))
+                best_matching_i = Matching()
+                best_matching_i = left + right + mid
+                best_matching_i.add_edge((motif, revc))
+                best_matching.append(best_matching_i)
+#                best_score = score
+            elif score < best_score:
+                best_matching = []
+                best_matching_i = Matching()
+                best_matching_i = left + right + mid
+                best_matching_i.add_edge((motif, revc))
+                best_matching.append(best_matching_i)
                 best_score = score
-                
+
     sub_matchings[(start, end)] = best_matching
     return best_matching
     
