@@ -140,6 +140,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     # best_matching = Matching()
     best_matchings = [Matching()]
     best_weight = float("inf")
+    best_n = 0
     
     for motif in motifs:
         assert motif > 0
@@ -179,12 +180,13 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
             
                         # if this matching is optimal on this interval, then combine all the optimal
                         # sub-matchings and add this edge
-                        if weight == best_weight:
-                        #if score > best_score - espsilon and score < best_score + epsilon
-                            best_matchings.append(best_matching_i)
-                        elif weight < best_weight:
-                            best_matchings = [matching_i]
-                            best_weight = weight
+                        if weight <= best_weight:
+                            if weight < best_weight or n > best_n:
+                                best_weight = weight
+                                best_n = n
+                                best_matchings = [matching_i]
+                            elif n == best_n:
+                                best_matchings.append(matching_i)
 
     sub_matchings[(start, end)] = best_matchings
     return best_matchings
