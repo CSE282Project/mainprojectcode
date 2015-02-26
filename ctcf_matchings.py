@@ -46,7 +46,7 @@ class Matching:
             this makes it easy when combining the scores of multiple matchings
             admittedly this may not be 100% robust but for now i think it's fine
             '''
-            return 0, 0
+            return None, 0
         total = 0.0
         n = len(self.edges)
         for u, v in self.edges:
@@ -124,7 +124,6 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         the interval.  Returns an empty matching if there are no edges within this
         interval
     '''
-    
     if (start, end) in sub_matchings:
         return sub_matchings[(start, end)]
     
@@ -139,8 +138,8 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     which is what we want
     '''
     # best_matching = Matching()
-    best_matchings = []
-    best_score = float("inf")
+    best_matchings = [Matching()]
+    best_weight = float("inf")
     
     for motif in motifs:
         assert motif > 0
@@ -174,35 +173,18 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
             for left in lefts:
                 for right in rights:
                     for mid in mids:
-                        left_mean, left_n = left.get_weight()
-                        right_mean, right_n = left.get_weight()
-                        mid_mean, mid_n = left.get_weight()
-            
-                        # get the weighted sum of the optimal sub-matchings that do not cross 
-                        # (motif, revc)
-                        total = (left_mean * left_n) + (right_mean * right_n) + (mid_mean * mid_n)
-            
-                        total += dist
-                        n = left_n + right_n + mid_n + 1
-                        score = float(total) / n
+                        matching_i = left + right + mid
+                        matching_i.add_edge((motif, revc))
+                        weight, n = matching_i.get_weight()
             
                         # if this matching is optimal on this interval, then combine all the optimal
                         # sub-matchings and add this edge
-                        if score == best_score:
+                        if weight == best_weight:
                         #if score > best_score - espsilon and score < best_score + epsilon
-                            # best_matching = left + right + mid
-                            # best_matching.add_edge((motif, revc))
-                            best_matching_i = Matching()
-                            best_matching_i = left + right + mid
-                            best_matching_i.add_edge((motif, revc))
                             best_matchings.append(best_matching_i)
-                        elif score < best_score:
-                            best_matching = []
-                            best_matching_i = Matching()
-                            best_matching_i = left + right + mid
-                            best_matching_i.add_edge((motif, revc))
-                            best_matchings.append(best_matching_i)
-                            best_score = score
+                        elif weight < best_weight:
+                            best_matchings = [matching_i]
+                            best_weight = weight
 
     sub_matchings[(start, end)] = best_matchings
     return best_matchings
@@ -225,7 +207,7 @@ if __name__ == '__main__':
     motifs = ['TTGA', 'GCGA']  # revc = ['TCAA', 'TCGC']
     k = 4
     matchings = maximal_matching(genome, motifs, k)
-    
+
     for matching in matchings:
         print matching
         print matching.get_weight()
