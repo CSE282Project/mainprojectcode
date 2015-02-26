@@ -138,8 +138,8 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     if there are no edges within the interval, then an empty matching will be returned
     which is what we want
     '''
-#    best_matching = Matching()
-    best_matching = []
+    # best_matching = Matching()
+    best_matchings = []
     best_score = float("inf")
     
     for motif in motifs:
@@ -163,47 +163,49 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
             first, last = sorted([motif, abs(revc)])
             
             # get best matching to the left of the edge, but within the interval
-            left = matching_helper(motif_nodes, revc_nodes, k, start, first - k, sub_matchings)
+            lefts = matching_helper(motif_nodes, revc_nodes, k, start, first - k, sub_matchings)
             
             # get best matching to the right of the edge, 
-            right = matching_helper(motif_nodes, revc_nodes, k, last + k, end, sub_matchings)
+            rights = matching_helper(motif_nodes, revc_nodes, k, last + k, end, sub_matchings)
             
             # get best matching within the loop formed by this edge
-            mid = matching_helper(motif_nodes, revc_nodes, k, first + k, last - k, sub_matchings)
+            mids = matching_helper(motif_nodes, revc_nodes, k, first + k, last - k, sub_matchings)
             
-            left_mean, left_n = left.get_weight()
-            right_mean, right_n = left.get_weight()
-            mid_mean, mid_n = left.get_weight()
+            for left in lefts:
+                for right in rights:
+                    for mid in mids:
+                        left_mean, left_n = left.get_weight()
+                        right_mean, right_n = left.get_weight()
+                        mid_mean, mid_n = left.get_weight()
             
-            # get the weighted sum of the optimal sub-matchings that do not cross 
-            # (motif, revc)
-            total = (left_mean * left_n) + (right_mean * right_n) + (mid_mean * mid_n)
+                        # get the weighted sum of the optimal sub-matchings that do not cross 
+                        # (motif, revc)
+                        total = (left_mean * left_n) + (right_mean * right_n) + (mid_mean * mid_n)
             
-            total += dist
-            n = left_n + right_n + mid_n + 1
-            score = float(total) / n
+                        total += dist
+                        n = left_n + right_n + mid_n + 1
+                        score = float(total) / n
             
-            # if this matching is optimal on this interval, then combine all the optimal
-            # sub-matchings and add this edge
-            if score == best_score:
-            #if score > best_score - espsilon and score < best_score + epsilon
-#                best_matching = left + right + mid
-#                best_matching.add_edge((motif, revc))
-                best_matching_i = Matching()
-                best_matching_i = left + right + mid
-                best_matching_i.add_edge((motif, revc))
-                best_matching.append(best_matching_i)
-#                best_score = score
-            elif score < best_score:
-                best_matching = []
-                best_matching_i = Matching()
-                best_matching_i = left + right + mid
-                best_matching_i.add_edge((motif, revc))
-                best_matching.append(best_matching_i)
-                best_score = score
+                        # if this matching is optimal on this interval, then combine all the optimal
+                        # sub-matchings and add this edge
+                        if score == best_score:
+                        #if score > best_score - espsilon and score < best_score + epsilon
+                            # best_matching = left + right + mid
+                            # best_matching.add_edge((motif, revc))
+                            best_matching_i = Matching()
+                            best_matching_i = left + right + mid
+                            best_matching_i.add_edge((motif, revc))
+                            best_matchings.append(best_matching_i)
+                        elif score < best_score:
+                            best_matching = []
+                            best_matching_i = Matching()
+                            best_matching_i = left + right + mid
+                            best_matching_i.add_edge((motif, revc))
+                            best_matchings.append(best_matching_i)
+                            best_score = score
 
-    sub_matchings[(start, end)] = best_matching
-    return best_matching
+    sub_matchings[(start, end)] = best_matchings
+    return best_matchings
     
 def maximal_matching(genome, motifs, k):
     # generate the graph
@@ -222,6 +224,8 @@ if __name__ == '__main__':
     genome = 'TTGAACTGAGCGAAGAAAGATCGCAGACTGTCAA'
     motifs = ['TTGA', 'GCGA']  # revc = ['TCAA', 'TCGC']
     k = 4
-    matching = maximal_matching(genome, motifs, k)
-    print matching
-    print matching.get_weight()
+    matchings = maximal_matching(genome, motifs, k)
+    
+    for matching in matchings:
+        print matching
+        print matching.get_weight()
