@@ -13,7 +13,8 @@ for(bd in 1:length(bedL)){
 
 
 pdf('topological.domian.size.distribution.pdf')
-plot(density(diff$hESC))
+plot(density(diff$hESC),main='Distribution of Topological Domain Size',
+	xlab='Size of individual topological domains (nucleotides/domain)')
 lines(density(diff$mESC),col='red')
 lines(density(diff$hIMR90),col='green')
 lines(density(diff$mCX),col='blue')
