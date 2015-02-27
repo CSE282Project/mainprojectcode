@@ -124,6 +124,8 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         the interval.  Returns an empty matching if there are no edges within this
         interval
     '''
+    global recursiveCount
+    
     if (start, end) in sub_matchings:
         return sub_matchings[(start, end)]
     
@@ -189,6 +191,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
                                 best_matchings.append(matching_i)
 
     sub_matchings[(start, end)] = best_matchings
+    recursiveCount+=1
     return best_matchings
     
 def maximal_matching(genome, motifs, k):
@@ -204,11 +207,24 @@ def maximal_matching(genome, motifs, k):
     '''
     return matching_helper(motif_nodes, revc_nodes, k, 1, len(genome) - k, {})
     
+recursiveCount = 0
+def initCounter():
+    '''
+    Initializes the recursion counter
+    '''
+    global recursiveCount
+    recursiveCount = 0
+
 if __name__ == '__main__':
     genome = 'TTGAACTGAGCGAAGAAAGATCGCAGACTGTCAA'
     motifs = ['TTGA', 'GCGA']  # revc = ['TCAA', 'TCGC']
     k = 4
+
+    initCounter()
+
     matchings = maximal_matching(genome, motifs, k)
+
+    print "Recursive Count: "+str(recursiveCount)
 
     for matching in matchings:
         print matching
