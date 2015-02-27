@@ -70,7 +70,7 @@ class Matching:
         u,v = item
         if v in self.vertices and u in self.vertices:  # avg: O(1), worst: O(n)
             for e in self.edges:
-                if u == e[0] & v == e[1]:
+                if u == e[0] and v == e[1]:
                     return True
         return False
 
@@ -256,3 +256,5 @@ if __name__ == '__main__':
     for matching in matchings:
         print matching
         print matching.get_weight()
+
+#    print (10,-21) in matchings[0]
