@@ -125,7 +125,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         interval
     '''
     global recursiveCount
-    
+
     if (start, end) in sub_matchings:
         return sub_matchings[(start, end)]
     
@@ -173,22 +173,26 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
             # get best matching within the loop formed by this edge
             mids = matching_helper(motif_nodes, revc_nodes, k, first + k, last - k, sub_matchings)
             
-            for left in lefts:
-                for right in rights:
-                    for mid in mids:
-                        matching_i = left + right + mid
-                        matching_i.add_edge((motif, revc))
-                        weight, n = matching_i.get_weight()
+#            for left in lefts:
+#                for right in rights:
+#                    for mid in mids:
+            for prod in cart_prod((lefts,rights,mids)): #  cartesian product implimentation
+                left  = prod[0]                         #
+                right = prod[1]                         #
+                mid   = prod[2]                         #
+                matching_i = left + right + mid           ##### left + right + mid or left + mid + right???
+                matching_i.add_edge((motif, revc))
+                weight, n = matching_i.get_weight()
             
-                        # if this matching is optimal on this interval, then combine all the optimal
-                        # sub-matchings and add this edge
-                        if weight <= best_weight:
-                            if weight < best_weight or n > best_n:
-                                best_weight = weight
-                                best_n = n
-                                best_matchings = [matching_i]
-                            elif n == best_n:
-                                best_matchings.append(matching_i)
+                # if this matching is optimal on this interval, then combine all the optimal
+                # sub-matchings and add this edge
+                if weight <= best_weight:
+                     if weight < best_weight or n > best_n:
+                        best_weight = weight
+                        best_n = n
+                        best_matchings = [matching_i]
+                     elif n == best_n:
+                        best_matchings.append(matching_i)
 
     sub_matchings[(start, end)] = best_matchings
     recursiveCount+=1
@@ -214,6 +218,20 @@ def initCounter():
     '''
     global recursiveCount
     recursiveCount = 0
+
+def cart_prod(tup):
+    # itertools.product ** partial understanding: 70% revisit **
+    # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
+    # product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
+    pools = map(tuple, tup) *1 #* kwds.get('repeat', 1)
+    result = [[]]
+    for pool in pools:
+        result = [x+[y] for x in result for y in pool]
+    out=[]
+    for prod in result:
+        #yield tuple(prod)
+        out.append(tuple(prod))
+    return out
 
 if __name__ == '__main__':
     genome = 'TTGAACTGAGCGAAGAAAGATCGCAGACTGTCAA'
