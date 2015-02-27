@@ -66,6 +66,15 @@ class Matching:
     def __repr__(self):
         return str(self.edges)
 
+    def __contains__(self,item):
+        u,v = item
+        if v in self.vertices and u in self.vertices:  # avg: O(1), worst: O(n)
+            for e in self.edges:
+                if u == e[0] & v == e[1]:
+                    return True
+        return False
+
+
 complements = {'A' : 'T', 'T' : 'A', 'G' : 'C', 'C' : 'G'}
 
 def reverse_complement(dna):
@@ -176,11 +185,11 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
 #            for left in lefts:
 #                for right in rights:
 #                    for mid in mids:
-            for prod in cart_prod((lefts,rights,mids)): #  cartesian product implimentation
-                left  = prod[0]                         #
-                right = prod[1]                         #
-                mid   = prod[2]                         #
-                matching_i = left + right + mid           ##### left + right + mid or left + mid + right???
+            for prod in cart_prod((lefts,rights,mids)):
+                left  = prod[0]
+                right = prod[1]
+                mid   = prod[2]
+                matching_i = left + right + mid 
                 matching_i.add_edge((motif, revc))
                 weight, n = matching_i.get_weight()
             
