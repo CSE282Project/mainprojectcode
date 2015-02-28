@@ -78,13 +78,16 @@ class Matching:
 complements = {'A' : 'T', 'T' : 'A', 'G' : 'C', 'C' : 'G'}
 
 def reverse_complement(dna):
+    global count
     revc = []
     for i in range(len(dna) - 1, -1, -1):
+        count += 1
         base = dna[i]
         revc.append(complements[base])
     return ''.join(revc)
     
 def get_vertices(genome, motifs, k):
+    global count
     reverse_complements = map(reverse_complement, motifs)
     motif_nodes = []
     revc_nodes = []
@@ -94,6 +97,7 @@ def get_vertices(genome, motifs, k):
         use 1-based indexing, so that positive/negative values delineate motifs from
         reverse complements
         '''
+        count += 1
         pos = i + 1
         kmer = genome[i:i + k]
         if kmer in motifs:
@@ -133,12 +137,12 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         the interval.  Returns an empty matching if there are no edges within this
         interval
     '''
-    global recursiveCount
+    global recursiveCount, count
 
     if (start, end) in sub_matchings:
         return sub_matchings[(start, end)]
     
-    
+    count += len(motif_nodes) + len(revc_nodes)
     inbounds = lambda x : start <= x and x <= end
     motifs = filter(inbounds, motif_nodes)
     reverses = filter(lambda x : inbounds(-x), revc_nodes)
@@ -156,6 +160,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     for motif in motifs:
         assert motif > 0
         for revc in reverses:
+            count += 1
             assert revc < 0
             
             dist = abs(motif - abs(revc))
@@ -186,6 +191,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
 #                for right in rights:
 #                    for mid in mids:
             for prod in cart_prod((lefts,rights,mids)):
+                count += 1
                 left  = prod[0]
                 right = prod[1]
                 mid   = prod[2]
@@ -204,7 +210,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
                         best_matchings.append(matching_i)
 
     sub_matchings[(start, end)] = best_matchings
-    recursiveCount+=1
+    recursiveCount += 1
     return best_matchings
     
 def maximal_matching(genome, motifs, k):
@@ -221,23 +227,29 @@ def maximal_matching(genome, motifs, k):
     return matching_helper(motif_nodes, revc_nodes, k, 1, len(genome) - k, {})
     
 recursiveCount = 0
+count = 0
 def initCounter():
     '''
     Initializes the recursion counter
     '''
-    global recursiveCount
+    global recursiveCount, count
     recursiveCount = 0
+    count = 0
 
 def cart_prod(tup):
+    global count
     # itertools.product ** partial understanding: 70% revisit **
     # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
     # product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
+    count +=  len(tup)
     pools = map(tuple, tup) *1 #* kwds.get('repeat', 1)
     result = [[]]
     for pool in pools:
+        count += len(result) * len(pool)
         result = [x+[y] for x in result for y in pool]
     out=[]
     for prod in result:
+        count += 1
         #yield tuple(prod)
         out.append(tuple(prod))
     return out
@@ -251,7 +263,8 @@ if __name__ == '__main__':
 
     matchings = maximal_matching(genome, motifs, k)
 
-    print "Recursive Count: "+str(recursiveCount)
+    print "Recursive Count: " + str(recursiveCount)
+    print "T(n) = " + str(count)
 
     for matching in matchings:
         print matching
