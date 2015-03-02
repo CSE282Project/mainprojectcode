@@ -157,6 +157,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         assert start <= start2
         assert end >= end2
         if (start < start2 or end > end2) and start2 < end2:
+            recursiveCount += 1
             return matching_helper(motifs, reverses, k, start2, end2, sub_matchings)
     
     '''
