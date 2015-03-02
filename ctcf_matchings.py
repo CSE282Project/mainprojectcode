@@ -150,6 +150,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     motifs = filter(inbounds, motif_nodes)
     reverses = filter(lambda x : inbounds(-x), revc_nodes)
     
+    count += 1
     if len(motifs) > 0 and len(reverses) > 0:
         start2 = min([motifs[0], -reverses[0]])
         end2 = max([motifs[-1], -reverses[-1]])
