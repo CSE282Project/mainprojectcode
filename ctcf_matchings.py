@@ -139,8 +139,10 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     '''
     global recursiveCount, count
 
-    if (start, end) in sub_matchings:
+    try:
         return sub_matchings[(start, end)]
+    except KeyError:
+        pass
     
     count += len(motif_nodes) + len(revc_nodes)
     inbounds = lambda x : start <= x and x <= end

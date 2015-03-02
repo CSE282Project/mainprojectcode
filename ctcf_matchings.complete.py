@@ -132,11 +132,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end):
         the interval.  Returns an empty matching if there are no edges within this
         interval
     '''
-    global recursiveCount
-
-#    if (start, end) in sub_matchings:
-#        return sub_matchings[(start, end)]
-    
+    global recursiveCount    
     
     inbounds = lambda x : start <= x and x <= end
     motifs = filter(inbounds, motif_nodes)
