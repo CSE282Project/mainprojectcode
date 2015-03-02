@@ -6,7 +6,11 @@ import random
 #Input: L
 #Output: randomly generated data of length L
 def generate_genome(L):
-    genome = ''.join([random.choice(['A','T','C','G']) for i in range(L)])
+    i = 0
+    genome = ''
+    while i < L:
+        genome += random.choice(['A','T','C','G'])
+        i += 1
     return genome
 
 #Create a function that checks if the coordinates for two overlaps.
