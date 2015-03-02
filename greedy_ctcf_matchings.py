@@ -142,6 +142,7 @@ def greedy_matching(genome, motifs, k):
     global count
     motifs, revc = get_vertices(genome, motifs, k)
     graph = merge_graph(motifs, revc)
+    print graph
     matching = Matching()
     up = False
     down = False
@@ -172,18 +173,18 @@ def greedy_matching(genome, motifs, k):
                 prev = vertex
                 
     return matching
+
+def parse_file(fname):
+    f = open(fname)
+    input = f.read().splitlines()
+    genome = input[0]
+    k = int(input[1])
+    motifs = input[2:]
+    return genome, k, motifs
     
 if __name__ == '__main__':
-    genome = 'TTGAACTGAGCGAAGAAAGATCGCAGACTGTCAA'
-    motifs = ['TTGA', 'GCGA']  # revc = ['TCAA', 'TCGC']
-    k = 4
-
-    init_counter()
-
+    fname = argv[1]
+    genome, k, motifs = parse_file(fname)
     matching = greedy_matching(genome, motifs, k)
-
-    print "T(N): " + str(count)
-
     print matching
     print matching.get_weight()
-    

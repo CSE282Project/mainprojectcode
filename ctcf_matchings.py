@@ -1,4 +1,5 @@
 from sys import argv
+from itertools import product
 
 class Matching:
     '''
@@ -143,11 +144,25 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         return sub_matchings[(start, end)]
     except KeyError:
         pass
-    
+        
     count += len(motif_nodes) + len(revc_nodes)
     inbounds = lambda x : start <= x and x <= end
     motifs = filter(inbounds, motif_nodes)
     reverses = filter(lambda x : inbounds(-x), revc_nodes)
+    
+    if len(motifs) > 0 and len(reverses) > 0:
+        print start, end
+        print motifs[0], motifs[-1]
+        print -reverses[0], -reverses[-1]
+        print "may shrink"
+        start2 = min([motifs[0], -reverses[0]])
+        end2 = max([motifs[-1], -reverses[-1]])
+        assert start <= start2
+        assert end >= end2
+        if (start < start2 or end > end2) and start2 < end2:
+            print "shrink"
+            return matching_helper(motifs, reverses, k, start2, end2, sub_matchings)
+        print "didn't shrink"
     
     '''
     instead of initializing best_matching to None we initialize it to an empty matching
@@ -192,12 +207,9 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
 #            for left in lefts:
 #                for right in rights:
 #                    for mid in mids:
-            for prod in cart_prod((lefts,rights,mids)):
+            for left, right, mid in product(lefts, rights, mids):
                 count += 1
-                left  = prod[0]
-                right = prod[1]
-                mid   = prod[2]
-                matching_i = left + right + mid 
+                matching_i = left + right + mid
                 matching_i.add_edge((motif, revc))
                 weight, n = matching_i.get_weight()
             
@@ -213,11 +225,13 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
 
     sub_matchings[(start, end)] = best_matchings
     recursiveCount += 1
+    print "finished", start, end
     return best_matchings
     
 def maximal_matching(genome, motifs, k):
     # generate the graph
     motif_nodes, revc_nodes = get_vertices(genome, motifs, k)
+    print "graph made"
     '''
     call the helper function, starting with an empty dictionary and setting the 
     endpoints to be the entire genome
@@ -238,38 +252,18 @@ def initCounter():
     recursiveCount = 0
     count = 0
 
-def cart_prod(tup):
-    global count
-    # itertools.product ** partial understanding: 70% revisit **
-    # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
-    # product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
-    count +=  len(tup)
-    pools = map(tuple, tup) *1 #* kwds.get('repeat', 1)
-    result = [[]]
-    for pool in pools:
-        count += len(result) * len(pool)
-        result = [x+[y] for x in result for y in pool]
-    out=[]
-    for prod in result:
-        count += 1
-        #yield tuple(prod)
-        out.append(tuple(prod))
-    return out
+def parse_file(fname):
+    f = open(fname)
+    input = f.read().splitlines()
+    genome = input[0]
+    k = int(input[1])
+    motifs = input[2:]
+    return genome, k, motifs
 
 if __name__ == '__main__':
-    genome = 'TTGAACTGAGCGAAGAAAGATCGCAGACTGTCAA'
-    motifs = ['TTGA', 'GCGA']  # revc = ['TCAA', 'TCGC']
-    k = 4
-
-    initCounter()
-
+    fname = argv[1]
+    genome, k, motifs = parse_file(fname)
     matchings = maximal_matching(genome, motifs, k)
-
-    print "Recursive Count: " + str(recursiveCount)
-    print "T(n) = " + str(count)
-
     for matching in matchings:
         print matching
         print matching.get_weight()
-
-#    print (10,-21) in matchings[0]
