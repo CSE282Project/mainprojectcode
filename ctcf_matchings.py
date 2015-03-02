@@ -151,18 +151,12 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     reverses = filter(lambda x : inbounds(-x), revc_nodes)
     
     if len(motifs) > 0 and len(reverses) > 0:
-        print start, end
-        print motifs[0], motifs[-1]
-        print -reverses[0], -reverses[-1]
-        print "may shrink"
         start2 = min([motifs[0], -reverses[0]])
         end2 = max([motifs[-1], -reverses[-1]])
         assert start <= start2
         assert end >= end2
         if (start < start2 or end > end2) and start2 < end2:
-            print "shrink"
             return matching_helper(motifs, reverses, k, start2, end2, sub_matchings)
-        print "didn't shrink"
     
     '''
     instead of initializing best_matching to None we initialize it to an empty matching
