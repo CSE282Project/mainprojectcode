@@ -49,7 +49,7 @@ if __name__ == '__main__':
 	#L   = [round(10**i) for i in range(3,4,.5)]
 	L = [150,200,300,400,500,600]
 	# n replicates of m motifs of length k
-	m = [3,4,5,6,10,12,14,16,20]#,500,1000,5000]
+	m = [3,4,5,6,10,12,14,16]#,500,1000,5000]
 	n = m
 	k = 5
 
@@ -75,8 +75,8 @@ if __name__ == '__main__':
 
 print rec_count
 
-fixL = 2
-fixm = 4
+fixL = 3
+fixm = 7
 plt.figure(1)
 # recursive counts vs L
 mat = rec_count
