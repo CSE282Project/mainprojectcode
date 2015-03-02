@@ -45,5 +45,4 @@ def generate_genome_with_motifs(n,L,motifs):
         motif_locations.append(motif_location)
         if not_used:
             genome = genome[:motif_location[0]]+motif+genome[motif_location[1]:]
-    print motif_locations
     return genome
