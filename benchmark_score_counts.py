@@ -66,74 +66,76 @@ if __name__ == '__main__':
 		for i in range(len(L)):
 			for j in range(len(m)): 
 				print j
-				before = time.time()
 				genome,motifs = random_genome_wrapper(n[i],L[i],m[i],k)
-				after  = time.time()
+				before = time.time()
 				rec_count[f,i,j], T_n[f,i,j], weight[f,i,j] = individual_test(algorithms[f],genome,motifs,k)
+				after  = time.time()
 				elapsed[f,i,j] = after-before
 
 
-print rec_count
+d2 = True
 
-fixL = 3
-fixm = 7
-plt.figure(1)
-# recursive counts vs L
-mat = rec_count
-# red dashes, blue dashes and green dashes
-plt.subplot(421)
-plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
-plt.xlabel('Length of Genome')
-plt.ylabel('Recursive Counts')
-# recursive counts vs m
-# red dashes, blue dashes and green dashes
-plt.subplot(422)
-plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
-plt.xlabel('Number of Forward CTCF Binding Motifs')
-plt.ylabel('Recursive Counts')
+if(d2):
+	fixL = 3
+	fixm = 7
+	plt.figure(1)
+	# recursive counts vs L
+	mat = rec_count
+	# red dashes, blue dashes and green dashes
+	plt.subplot(421)
+	plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
+	plt.xlabel('Length of Genome')
+	plt.ylabel('Recursive Counts')
+	# recursive counts vs m
+	# red dashes, blue dashes and green dashes
+	plt.subplot(422)
+	plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
+	plt.xlabel('Number of Forward CTCF Binding Motifs')
+	plt.ylabel('Recursive Counts')
 
-# T_n vs L
-mat = T_n
-# red dashes, blue dashes and green dashes
-plt.subplot(423)
-plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
-plt.xlabel('Length of Genome')
-plt.ylabel('T(n)')
-# recursive counts vs m
-# red dashes, blue dashes and green dashes
-plt.subplot(424)
-plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
-plt.xlabel('Number of Forward CTCF Binding Motifs')
-plt.ylabel('T(n)')
+	# T_n vs L
+	mat = T_n
+	# red dashes, blue dashes and green dashes
+	plt.subplot(423)
+	plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
+	plt.xlabel('Length of Genome')
+	plt.ylabel('T(n)')
+	# recursive counts vs m
+	# red dashes, blue dashes and green dashes
+	plt.subplot(424)
+	plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
+	plt.xlabel('Number of Forward CTCF Binding Motifs')
+	plt.ylabel('T(n)')
 
-# weights vs L
-mat = weight
-# red dashes, blue dashes and green dashes
-plt.subplot(425)
-plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
-plt.xlabel('Length of Genome')
-plt.ylabel('Average Score')
-# recursive counts vs m
-# red dashes, blue dashes and green dashes
-plt.subplot(426)
-plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
-plt.xlabel('Number of Forward CTCF Binding Motifs')
-plt.ylabel('Average Score')
+	# weights vs L
+	mat = weight
+	# red dashes, blue dashes and green dashes
+	plt.subplot(425)
+	plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
+	plt.xlabel('Length of Genome')
+	plt.ylabel('Average Score')
+	# recursive counts vs m
+	# red dashes, blue dashes and green dashes
+	plt.subplot(426)
+	plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
+	plt.xlabel('Number of Forward CTCF Binding Motifs')
+	plt.ylabel('Average Score')
 
-# elapsed vs L
-mat = elapsed
-# red dashes, blue dashes and green dashes
-plt.subplot(427)
-plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
-plt.xlabel('Length of Genome')
-plt.ylabel('Time Elapsed (sec)')
-# recursive counts vs m
-# red dashes, blue dashes and green dashes
-plt.subplot(428)
-plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
-plt.xlabel('Number of Forward CTCF Binding Motifs')
-plt.ylabel('Time Elapsed (sec)')
+	# elapsed vs L
+	mat = elapsed
+	# red dashes, blue dashes and green dashes
+	plt.subplot(427)
+	plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
+	plt.xlabel('Length of Genome')
+	plt.ylabel('Time Elapsed (sec)')
+	# recursive counts vs m
+	# red dashes, blue dashes and green dashes
+	plt.subplot(428)
+	plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
+	plt.xlabel('Number of Forward CTCF Binding Motifs')
+	plt.ylabel('Time Elapsed (sec)')
 
+	plt.show()
+else:
 
-plt.show()
 
