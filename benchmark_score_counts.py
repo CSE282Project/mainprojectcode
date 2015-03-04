@@ -74,8 +74,8 @@ def plotin3d(fig,sub,x,y,Z,xlab,ylab,title):
 
 
 if __name__ == '__main__':
-	test = True
-	d2 = False
+	test = False
+	d2 = True
 
 	# Which algorithms
 	algorithms = ['Greedy','Dynamic_Programming']#,'Complete']
@@ -85,9 +85,9 @@ if __name__ == '__main__':
 		L = [150,200]
 		m = [3,4]
 	else:
-		L = [150,200,300,400,500,550,600]
+		L = [150,200,300,400,500,600]
 		# n replicates of m motifs of length k
-		m = [3,4,5,6,10,12,14,16]#,500,1000,5000]
+		m = [3  ,4  ,5  ,6  ,10 ,12 ,14]#,500,1000,5000]
 	n = m
 	k = 5
 
@@ -96,9 +96,11 @@ if __name__ == '__main__':
 	T_n       = np.zeros( ( len(algorithms) , len(L) , len(m) ) )
 	weight    = np.zeros( ( len(algorithms) , len(L) , len(m) ) )
 	elapsed   = np.zeros( ( len(algorithms) , len(L) , len(m) ) )
+	out = np.zeros( (len(algorithms)*len(L)*len(m) , 7) )
 	# Which files
 	#files=['greedy_ctcf_matchings','ctcf_matchings','ctcf_matchings.complete']
 
+	outcount=0
 	# Iterate over procedures and parameters
 	for f in range(len(algorithms)):
 		for i in range(len(L)):
@@ -109,12 +111,19 @@ if __name__ == '__main__':
 				rec_count[f,i,j], T_n[f,i,j], weight[f,i,j] = individual_test(algorithms[f],genome,motifs,k)
 				after  = time.time()
 				elapsed[f,i,j] = after-before
-
+				out[outcount,:] = [ f , L[i] , m[j] , rec_count[f,i,j], T_n[f,i,j], weight[f,i,j] , elapsed[f,i,j] ]
+				outcount+=1
+ # Save 
+import pickle
+bench = [rec_count,T_n,weight,elapsed]
+pickle.dump( bench, open( "benchmark.p", "wb" ) )
+pickle.dump( out, open("benchmark_out.p","wb"))
+np.savetxt("benchmark.csv", out, delimiter=",")
 
 
 if(d2):
 	fixL = 5
-	fixm = 7
+	fixm = 6
 	plt.figure(1)
 	plt.title('Count, Score and Runtime Analysis')
 	# recursive counts vs L
@@ -122,45 +131,36 @@ if(d2):
 	# red dashes, blue dashes and green dashes
 	plt.subplot(421)
 	plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
-	plt.xlabel('Length of Genome')
 	plt.ylabel('Recursive Counts')
-	plt.ylim(-100,100000)
+	#plt.ylim(-100,100000)
 	# recursive counts vs m
 	# red dashes, blue dashes and green dashes
 	plt.subplot(422)
 	plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
-	plt.xlabel('Number of Forward CTCF Binding Motifs')
 	plt.ylabel('Recursive Counts')
-
 	# T_n vs L
 	mat = T_n
 	# red dashes, blue dashes and green dashes
 	plt.subplot(423)
 	plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
-	plt.xlabel('Length of Genome')
 	plt.ylabel('T(n)')
-	plt.ylim(-100,6000000)
+	#plt.ylim(-100,6000000)
 	# recursive counts vs m
 	# red dashes, blue dashes and green dashes
 	plt.subplot(424)
 	plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
-	plt.xlabel('Number of Forward CTCF Binding Motifs')
 	plt.ylabel('T(n)')
-
 	# weights vs L
 	mat = weight
 	# red dashes, blue dashes and green dashes
 	plt.subplot(425)
 	plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
-	plt.xlabel('Length of Genome')
 	plt.ylabel('Average Score')
 	# recursive counts vs m
 	# red dashes, blue dashes and green dashes
 	plt.subplot(426)
 	plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
-	plt.xlabel('Number of Forward CTCF Binding Motifs')
 	plt.ylabel('Average Score')
-
 	# elapsed vs L
 	mat = elapsed
 	# red dashes, blue dashes and green dashes
@@ -168,15 +168,14 @@ if(d2):
 	plt.plot(L,mat[0,:,fixm], 'r--', L, mat[1,:,fixm],'b--')
 	plt.xlabel('Length of Genome (L) '+'(fixed m='+str(m[fixm])+')')
 	plt.ylabel('Time Elapsed (sec)')
-	plt.ylim(-5,50)
+	plt.ylim(-5,np.max(mat[1,fixL,:])+np.max(mat[1,fixL,:])*.1)
 	# recursive counts vs m
 	# red dashes, blue dashes and green dashes
 	plt.subplot(428)
 	plt.plot(m,mat[0,fixL,:], 'r--', m, mat[1,fixL,:],'b--')
 	plt.xlabel('Number of Forward CTCF Binding Motifs (m)'+'(fixed L='+str(L[fixL])+')')
 	plt.ylabel('Time Elapsed (sec)')
-	plt.ylim(-5,50)
-
+	plt.ylim(-5,np.max(mat[1,fixL,:])+np.max(mat[1,fixL,:])*.1)
 	plt.show()
 else:
 	x = L
