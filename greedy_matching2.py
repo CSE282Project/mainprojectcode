@@ -1,5 +1,8 @@
 from sys import argv
 
+recursiveCount = 0
+count = 0
+
 class Matching:
     '''
     A matching object is a collection of vertex-disjoint edges
@@ -147,10 +150,12 @@ def sign(x):
         return 0    
     
 def smallest_edge(vertices):
+    global count
     min_weight = float("inf")
     min_edge = None
     min_indices = None
     for i in xrange(len(vertices) - 1):
+        count += 1
         u = vertices[i]
         v = vertices[i + 1]
         if sign(u) != sign(v):
@@ -164,6 +169,7 @@ def smallest_edge(vertices):
     return min_edge, min_indices   
 
 def greedy_matching(genome, motifs, k):
+    global count
     matching = Matching()
     motifs, revc = get_vertices(genome, motifs, k)
     vertices = merge_graph(motifs, revc)
@@ -179,6 +185,7 @@ def greedy_matching(genome, motifs, k):
             assert start + 1 == end
             
             for i in xrange(max(start - k, 0), min(end + k + 1, len(vertices))):
+                count += 1
                 w = abs(vertices[i])
                 d1 = abs(u - w)
                 d2 = abs(v - w)
@@ -186,6 +193,7 @@ def greedy_matching(genome, motifs, k):
                     vertices[i] = None
             assert vertices[start] == None
             assert vertices[end] == None
+            count += len(vertices)
             vertices = filter(lambda x : x != None, vertices)
     return matching
                 
