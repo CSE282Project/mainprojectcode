@@ -4,34 +4,40 @@ import matplotlib.pyplot as plt
 
 from GenerateRandomSeqWithMotifs import *
 import greedy_ctcf_matchings as grdy
+import greedy_matching2 as grdy2
 import ctcf_matchings as match
 import ctcf_matchings_complete as cmplt
 
-recursiveCount=0
-count = 0
+#recursiveCount=0
+#count = 0
 
 def individual_test(f,genome,motifs,k):
 	if f=='Greedy':
-		from greedy_ctcf_matchings import count
 		grdy.init_counter()  # initialize counters
 		matching = grdy.greedy_matching(genome, motifs, k) # run matching
 		weight = matching.get_weight()[0]
-		recursiveCount = 0
-		count = 0
-	elif f=='Dynamic_Programming':
 		from ctcf_matchings import recursiveCount
-		from ctcf_matchings import count
+		from greedy_ctcf_matchings import count
+	elif f=='Dynamic_Programming':
 		match.initCounter()  # initialize counters
 		matchings = match.maximal_matching(genome, motifs, k) # run matching
 		weightsL = [matching.get_weight()[0] for matching in matchings]
 		weight   = sum(weightsL)/len(weightsL)
+		from ctcf_matchings import recursiveCount
+		from ctcf_matchings import count
 	elif f=='Complete':
-		from ctcf_matchings_complete import recursiveCount
-		from ctcf_matchings_complete import count
 		cmplt.initCounter()  # initialize counters
 		matchings = cmplt.maximal_matching(genome, motifs, k) # run matching
 		weightsL = [matching.get_weight()[0] for matching in matchings]
 		weight   = sum(weightsL)/len(weightsL)
+		from ctcf_matchings_complete import recursiveCount
+		from ctcf_matchings_complete import count
+	if f=='Greedy2':
+		grdy.init_counter()  # initialize counters
+		matching = grdy.greedy_matching(genome, motifs, k) # run matching
+		weight = matching.get_weight()[0]
+		from ctcf_matchings import recursiveCount
+		from greedy_ctcf_matchings import count
 
 	print '-'*20
 	print recursiveCount
@@ -78,7 +84,7 @@ if __name__ == '__main__':
 	d2 = True
 
 	# Which algorithms
-	algorithms = ['Greedy','Dynamic_Programming']#,'Complete']
+	algorithms = ['Greedy','Dynamic_Programming', 'Greedy2']#,'Complete']
 	# Genome lengths
 	#L   = [round(10**i) for i in range(3,4,.5)]
 	if test:
