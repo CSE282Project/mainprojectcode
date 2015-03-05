@@ -74,6 +74,9 @@ class Matching:
                 if u == e[0] and v == e[1]:
                     return True
         return False
+        
+    def __len__(self):
+        return len(self.edges)
 
 
 complements = {'A' : 'T', 'T' : 'A', 'G' : 'C', 'C' : 'G'}
@@ -141,7 +144,10 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
     global recursiveCount, count
 
     try:
-        return sub_matchings[(start, end)]
+        best = sub_matchings[(start, end)]
+        #if len(best) > 0:
+            #print "halleljah", start, end
+        return best
     except KeyError:
         pass
         
@@ -158,7 +164,9 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
         assert end >= end2
         if (start < start2 or end > end2) and start2 < end2:
             recursiveCount += 1
-            return matching_helper(motifs, reverses, k, start2, end2, sub_matchings)
+            best = matching_helper(motifs, reverses, k, start2, end2, sub_matchings)
+            sub_matchings[(start, end)] = best
+            return best
     
     '''
     instead of initializing best_matching to None we initialize it to an empty matching
@@ -221,7 +229,7 @@ def matching_helper(motif_nodes, revc_nodes, k, start, end, sub_matchings):
 
     sub_matchings[(start, end)] = best_matchings
     recursiveCount += 1
-    print "finished", start, end
+    #print "finished", start, end
     return best_matchings
     
 def maximal_matching(genome, motifs, k):
