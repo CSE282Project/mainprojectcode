@@ -93,7 +93,7 @@ if __name__ == '__main__':
     else:
         L = 400 #[150, 200, 250, 300, 350, 400]#,400,500,600]
         # n replicates of m motifs of length k
-        m = [3, 4, 5, 6, 8, 10, 12]#,14]#,500,1000,5000]
+        m = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,14]#,500,1000,5000]
     n = m
     k = 5
 
@@ -163,25 +163,31 @@ if __name__ == '__main__':
             plt.subplot(221)
             l = plt.plot(edges, recs, ls = '--', label=algorithm)
             lines.append(l)
-            plt.ylabel('Recursive Counts')
+            plt.ylabel('Recursion Depth')
             #plt.legend()
             
             plt.subplot(222)
             plt.plot(edges, T_n, ls = '--', label=algorithm)
-            plt.ylabel('T(|E|)')
+            plt.ylabel('T(|E|) (steps)')
             #plt.legend()
             
             plt.subplot(223)
             plt.plot(edges, weight, ls = '--', label=algorithm)
-            plt.ylabel("matching weight")
+            plt.ylabel("matching weight (base pairs)")
             #plt.legend()
             
             plt.subplot(224)
             plt.plot(edges, elapsed, ls = '--', label=algorithm)
-            plt.ylabel('elapsed time')
+            plt.ylabel('elapsed time (seconds)')
             #plt.legend()
+        
+        plt.subplot(222)
+        e = np.arange(0, max(edges), 0.1)
+        #plt.plot(e, e**3, ls='--', label='y = x^4')    
+        
         print "show"
         #plt.figlegend(lines, algorithms, 0)
+        plt.legend(loc=1, fontsize='xx-small')
         plt.show()
                     
     else:
