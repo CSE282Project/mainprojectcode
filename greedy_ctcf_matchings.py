@@ -76,12 +76,14 @@ class Matching:
 
 
 count = 0
+recursiveCount = 0
 def init_counter():
     '''
     Initializes the recursion counter
     '''
     global count
     count = 0
+    recursiveCount
 
 complements = {'A' : 'T', 'T' : 'A', 'G' : 'C', 'C' : 'G'}
 
