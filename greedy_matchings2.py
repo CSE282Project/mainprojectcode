@@ -149,7 +149,7 @@ def sign(x):
     else:
         return 0    
     
-def smallest_edge(vertices):
+def smallest_edge(vertices,k):
     global count
     min_weight = float("inf")
     min_edge = None
@@ -158,7 +158,7 @@ def smallest_edge(vertices):
         count += 1
         u = vertices[i]
         v = vertices[i + 1]
-        if sign(u) != sign(v):
+        if sign(u) != sign(v) and abs(abs(u)-abs(v))>k:
             d = abs(abs(u) - abs(v))
             if d < min_weight:
                 min_weight = d
@@ -175,7 +175,7 @@ def greedy_matching(genome, motifs, k):
     vertices = merge_graph(motifs, revc)
     done = False
     while not done:
-        min_edge, min_indices = smallest_edge(vertices)
+        min_edge, min_indices = smallest_edge(vertices,k)
         if min_edge == None:
             done = True
         else:
