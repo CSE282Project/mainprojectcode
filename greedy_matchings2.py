@@ -158,9 +158,9 @@ def smallest_edge(vertices,k):
         count += 1
         u = vertices[i]
         v = vertices[i + 1]
-        if sign(u) != sign(v) and abs(abs(u)-abs(v))>k:
+        if sign(u) != sign(v):
             d = abs(abs(u) - abs(v))
-            if d < min_weight:
+            if d < min_weight and d > k:
                 min_weight = d
                 if u < 0:
                     u, v = v, u
